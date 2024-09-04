@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Booking Form</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="css/animate.css">
+    
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="css/magnific-popup.css">
+
+    <link rel="stylesheet" href="css/aos.css">
+
+    <link rel="stylesheet" href="css/ionicons.min.css">
+
+    <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+    <link rel="stylesheet" href="css/jquery.timepicker.css">
+
+    
+    <link rel="stylesheet" href="css/flaticon.css">
+    <link rel="stylesheet" href="css/icomoon.css">
+    <link rel="stylesheet" href="css/style.css">
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+
+  </head>
+
+  <style>
+         section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 0;
+        }
+        .containers {
+            display: flex;
+            flex-wrap: wrap;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 900px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-containers {
+            flex: 2;
+            padding-right: 20px;
+            box-sizing: border-box;
+        }
+        .info-containers {
+            flex: 1;
+            border-left: 1px solid #ccc;
+            padding-left: 20px;
+            box-sizing: border-box;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5em;
+        }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-group:last-child {
+            margin-right: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #8d703b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: black;
+        }
+        .info-item {
+            margin-bottom: 15px;
+        }
+        .info-label {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .info-value {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+/* Modal styles */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.7); /* Black background with opacity */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: auto; /* Center the modal */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 40%; /* Adjust the width as needed */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%); /* Vertically center */
+}
+
+.close-button {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#okButton {
+  background-color: #8d703b; /* Green */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+#okButton:hover {
+  background-color: black;
+}
+
+
+    </style>
+  </style>
+  <body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+	    <div class="container">
+	      <a class="navbar-brand" href="index.html">Deluxe</a>
+	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+	        <span class="oi oi-menu"></span> Menu
+	      </button>
+
+	      <div class="collapse navbar-collapse" id="ftco-nav">
+	        <ul class="navbar-nav ml-auto">
+	          <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+	          <li class="nav-item active"><a href="rooms.html" class="nav-link">Rooms</a></li>
+	          <li class="nav-item"><a href="restaurant.html" class="nav-link">Restaurant</a></li>
+	          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+	          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
+	          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+	        </ul>
+	      </div>
+	    </div>
+	  </nav>
+    <!-- END nav -->
+
+    <div class="hero-wrap" style="background-image: url('images/bg_1.jpg');">
+      <div class="overlay"></div>
+      <div class="container">
+        <div class="row no-gutters slider-text d-flex align-itemd-end justify-content-center">
+          <div class="col-md-9 ftco-animate text-center d-flex align-items-end justify-content-center">
+          	<div class="text">
+	            <p class="breadcrumbs mb-2"><span class="mr-2"><a href="index.html">Home</a></span> <span>Booking Form</span></p>
+	            <h1 class="mb-4 bread">Booking Form</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <section>
+      <div class="containers">
+          <div class="form-containers">
+              <form id="reservationForm">
+                  <h2>Reservation Form</h2>
+                  <div class="form-row">
+                      <div class="form-group">
+                          <label for="name">Name</label>
+                          <input type="text" id="name" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="phone">Phone</label>
+                          <input type="tel" id="phone" required>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group">
+                          <label for="email">Email</label>
+                          <input type="email" id="email" required>
+                      </div>
+                      <div class="form-group">
+                          <label for="room">Room</label>
+                          <select id="room" class="form-control" required>
+                              <option value="select_room">Select room</option>
+                              <option value="Suite">Suite</option>
+                              <option value="Family Room">Family Room</option>
+                              <option value="Deluxe Room">Deluxe Room</option>
+                              <option value="Classic Room">Classic Room</option>
+                              <option value="Superior Room">Superior Room</option>
+                              <option value="Luxury Room">Luxury Room</option>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="price">Room Price GHC</label>
+                      <input type="text" id="price" readonly>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group">
+                          <label for="checkIn">Date Check In</label>
+                          <input type="date" id="checkIn" required>
+                          <span id="checkInError" style="color: red; display: none;">Check-In date cannot be before today</span>
+                      </div>
+                      <div class="form-group">
+                          <label for="checkOut">Date Check Out</label>
+                          <input type="date" id="checkOut" required>
+                          <span id="dateError" style="color: red; display: none;">Invalid Check-Out Date</span>
+                      </div>
+                  </div>
+                  <div class="form-row">
+                      <div class="form-group">
+                          <label for="adults">Adults</label>
+                          <select id="adults" required>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                          </select>
+                      </div>
+                      <div class="form-group">
+                          <label for="children">Children</label>
+                          <select id="children" required>
+                              <option value="0">0</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                          </select>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="message">Message</label>
+                      <textarea id="message"></textarea>
+                  </div>
+                  <button type="submit">Reserve Now</button>
+              </form>
+          </div>
+          <div class="info-containers">
+              <div class="info-item">
+                  <div class="info-label">Address:</div>
+                  <div class="info-value">1234 Example St, City, Country</div>
+              </div>
+              <div class="info-item">
+                  <div class="info-label">Phone:</div>
+                  <div class="info-value">+1 234 567 890</div>
+              </div>
+              <div class="info-item">
+                  <div class="info-label">Email:</div>
+                  <div class="info-value">info@example.com</div>
+              </div>
+          </div>
+      </div>
+  </section>
+  
+  
+  
+    
+<!-- Modal HTML -->
+<div id="successModal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="closeModal">&times;</span>
+      <h2>Reservation Submitted Successfully!</h2>
+      <p>Your reservation has been successfully submitted.</p>
+      <button id="okButton">OK</button>
+    </div>
+  </div>
+  
+  
+    
+    <section class="instagram pt-5">
+      <div class="container-fluid">
+        <div class="row no-gutters justify-content-center pb-5">
+          <div class="col-md-7 text-center heading-section ftco-animate">
+            <h2><span>Instagram</span></h2>
+          </div>
+        </div>
+        <div class="row no-gutters">
+          <div class="col-sm-12 col-md ftco-animate">
+            <a href="images/insta-1.jpg" class="insta-img image-popup" style="background-image: url(images/insta-1.jpg);">
+              <div class="icon d-flex justify-content-center">
+                <span class="icon-instagram align-self-center"></span>
+              </div>
+            </a>
+          </div>
+          <div class="col-sm-12 col-md ftco-animate">
+            <a href="images/insta-2.jpg" class="insta-img image-popup" style="background-image: url(images/insta-2.jpg);">
+              <div class="icon d-flex justify-content-center">
+                <span class="icon-instagram align-self-center"></span>
+              </div>
+            </a>
+          </div>
+          <div class="col-sm-12 col-md ftco-animate">
+            <a href="images/insta-3.jpg" class="insta-img image-popup" style="background-image: url(images/insta-3.jpg);">
+              <div class="icon d-flex justify-content-center">
+                <span class="icon-instagram align-self-center"></span>
+              </div>
+            </a>
+          </div>
+          <div class="col-sm-12 col-md ftco-animate">
+            <a href="images/insta-4.jpg" class="insta-img image-popup" style="background-image: url(images/insta-4.jpg);">
+              <div class="icon d-flex justify-content-center">
+                <span class="icon-instagram align-self-center"></span>
+              </div>
+            </a>
+          </div>
+          <div class="col-sm-12 col-md ftco-animate">
+            <a href="images/insta-5.jpg" class="insta-img image-popup" style="background-image: url(images/insta-5.jpg);">
+              <div class="icon d-flex justify-content-center">
+                <span class="icon-instagram align-self-center"></span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="ftco-footer ftco-bg-dark ftco-section">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Deluxe Hotel</h2>
+              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+              <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+                <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4 ml-md-5">
+              <h2 class="ftco-heading-2">Useful Links</h2>
+              <ul class="list-unstyled">
+                <li><a href="#" class="py-2 d-block">Blog</a></li>
+                <li><a href="#" class="py-2 d-block">Rooms</a></li>
+                <li><a href="#" class="py-2 d-block">Amenities</a></li>
+                <li><a href="#" class="py-2 d-block">Gift Card</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+             <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Privacy</h2>
+              <ul class="list-unstyled">
+                <li><a href="#" class="py-2 d-block">Career</a></li>
+                <li><a href="#" class="py-2 d-block">About Us</a></li>
+                <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+                <li><a href="#" class="py-2 d-block">Services</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="ftco-footer-widget mb-4">
+            	<h2 class="ftco-heading-2">Have a Questions?</h2>
+            	<div class="block-23 mb-3">
+	              <ul>
+	                <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+	                <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+	                <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+	              </ul>
+	            </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 text-center">
+
+            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This is developed by <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="#" target="_blank">SimplyMark</a>
+  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+          </div>
+        </div>
+      </div>
+    </footer>
+    
+  
+
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/jquery.easing.1.3.js"></script>
+  <script src="js/jquery.waypoints.min.js"></script>
+  <script src="js/jquery.stellar.min.js"></script>
+  <script src="js/owl.carousel.min.js"></script>
+  <script src="js/jquery.magnific-popup.min.js"></script>
+  <script src="js/aos.js"></script>
+  <script src="js/jquery.animateNumber.min.js"></script>
+  <script src="js/bootstrap-datepicker.js"></script>
+  <script src="js/jquery.timepicker.min.js"></script>
+  <script src="js/scrollax.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="js/google-map.js"></script>
+  <script src="js/main.js"></script>
+
+
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+  <script>
+    const checkInInput = document.getElementById('checkIn');
+    const checkOutInput = document.getElementById('checkOut');
+    const checkInError = document.getElementById('checkInError');
+    const dateError = document.getElementById('dateError');
+
+    function validateDates() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day
+        const checkInDate = new Date(checkInInput.value);
+        const checkOutDate = new Date(checkOutInput.value);
+
+        // Check if Check-In date is before today
+        if (checkInDate < today) {
+            checkInError.style.display = 'inline';
+            checkInInput.setCustomValidity('Check-In date cannot be before today');
+        } else {
+            checkInError.style.display = 'none';
+            checkInInput.setCustomValidity('');
+        }
+
+        // Check if Check-Out date is before or same as Check-In date
+        if (checkOutDate <= checkInDate) {
+            dateError.style.display = 'inline';
+            checkOutInput.setCustomValidity('Invalid date');
+        } else {
+            dateError.style.display = 'none';
+            checkOutInput.setCustomValidity('');
+        }
+    }
+
+    checkInInput.addEventListener('input', validateDates);
+    checkOutInput.addEventListener('input', validateDates);
+</script>
+  <script>
+    document.getElementById('room').addEventListener('change', function() {
+        const roomPrices = {
+            'Suite': 500,
+            'Family Room': 1000,
+            'Deluxe Room': 1500,
+            'Classic Room': 2000,
+            'Superior Room': 2500,
+            'Luxury Room': 3000
+        };
+        const selectedRoom = this.value;
+        const price = roomPrices[selectedRoom];
+        document.getElementById('price').value = price ? `GHC ${price}` : '';
+    });
+
+    // Initialize Firebase (replace with your own config)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDLO6LxCZnYRY0ZZGwQZocEQPIr7GFiShs",
+        authDomain: "infotechnexus-47b53.firebaseapp.com",
+        projectId: "infotechnexus-47b53",
+        storageBucket: "infotechnexus-47b53.appspot.com",
+        messagingSenderId: "70691322233",
+        appId: "1:70691322233:web:61c491e839e3c94eb497a8",
+        measurementId: "G-KF3Z6X8VPF"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Get a reference to the Firestore database
+    const db = firebase.firestore();
+
+    // Function to send SMS
+    async function sendSMS(recipient, message) {
+        const endPoint = 'https://apps.mnotify.net/smsapi';
+        const apiKey = 'TUX6IqmI8FGQEjY2isJROxxCP';
+        const senderId = 'TTC24';
+
+        const url = `${endPoint}?key=${apiKey}&to=${recipient}&msg=${encodeURIComponent(message)}&sender_id=${senderId}`;
+
+        try {
+            const response = await axios.post(url);
+            console.log('SMS sent successfully:', response.data);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                console.error('Error sending SMS:', error.response ? error.response.data : error.message);
+            } else if (error instanceof Error) {
+                console.error('Error sending SMS:', error.message);
+            } else {
+                console.error('Unexpected error sending SMS:', error);
+            }
+        }
+    }
+
+    // Handle form submission
+    document.getElementById('reservationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Get form values
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const email = document.getElementById('email').value;
+        const room = document.getElementById('room').value;
+        const checkIn = document.getElementById('checkIn').value;
+        const checkOut = document.getElementById('checkOut').value;
+        const adults = document.getElementById('adults').value;
+        const children = document.getElementById('children').value;
+        const message = document.getElementById('message').value;
+        const price = document.getElementById('price').value.replace("GHC ", ""); // Extract numeric value
+
+        // Convert check-in and check-out to Firestore Timestamps
+        const checkInDate = new Date(checkIn);
+        const checkOutDate = new Date(checkOut);
+
+        // Initialize Paystack payment
+        let handler = PaystackPop.setup({
+            key: 'pk_test_2102dadd0a64ea9007738c49b2559d1b4a80d96f', // Replace with your Paystack public key
+            email: email,
+            amount: price * 100, // Paystack accepts amount in kobo, hence multiply by 100
+            currency: "GHS", // Set currency to Ghana Cedi
+            ref: 'RSV_' + Math.floor((Math.random() * 1000000000) + 1), // Generate a unique reference number
+            metadata: {
+                custom_fields: [
+                    {
+                        display_name: "Customer Name",
+                        variable_name: "customer_name",
+                        value: name
+                    },
+                    {
+                        display_name: "Room",
+                        variable_name: "room",
+                        value: room
+                    }
+                ]
+            },
+            callback: function(response) {
+                // Use an async IIFE to handle async operations
+                (async () => {
+                    try {
+                        const docRef = await db.collection("Guests").add({
+                            name: name,
+                            phone: phone,
+                            email: email,
+                            room: room,
+                            checkIn: firebase.firestore.Timestamp.fromDate(checkInDate),
+                            checkOut: firebase.firestore.Timestamp.fromDate(checkOutDate),
+                            adults: adults,
+                            children: children,
+                            message: message,
+                            price: `GHC ${price}`,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                            paymentRef: response.reference // Store the Paystack reference
+                        });
+
+                        console.log("Document written with ID: ", docRef.id);
+
+                        // Hello ${name}! Your payment of GHC ${price} has been successfully processed to Delux Hotel.You are now cleared for room assignment and coupon issuance. Thank you!
+
+                        // Send SMS to user confirming payment
+                       const paymentConfirmationMessage = `
+Hello ${name}!
+
+Thank you for choosing Delux Hotel. We are pleased to confirm your reservation as follows:
+
+Reservation Details:
+- **Check-In Date:** ${checkIn}
+- **Check-Out Date:** ${checkOut}
+- **Room Type:** ${room}
+- **Guests:** ${adults} Adults, ${children} Children
+
+We look forward to welcoming you. If you have any special requests or need further assistance, please don't hesitate to contact us.
+z
+Best regards,
+Delux Hotel
+[Contact Information]
+`;
+await sendSMS(phone, paymentConfirmationMessage);
+
+                        showModal(); // Show the success modal
+                        document.getElementById('reservationForm').reset();
+                    } catch (error) {
+                        console.error("Error adding document or sending SMS: ", error);
+                        alert("Error submitting reservation. Please try again.");
+                    }
+                })();
+            },
+            onClose: function() {
+                alert('Payment process was closed.');
+            }
+        });
+
+        handler.openIframe();
+    });
+
+    // Function to show the modal
+    function showModal() {
+        document.getElementById('successModal').style.display = 'block';
+    }
+
+    // Function to close the modal
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('successModal').style.display = 'none';
+    });
+
+    document.getElementById('okButton').addEventListener('click', function() {
+        document.getElementById('successModal').style.display = 'none';
+    });
+
+</script>
+  </body>
+</html>
