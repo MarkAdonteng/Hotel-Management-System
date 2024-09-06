@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Deluxe - Free Bootstrap 4 Template by Colorlib</title>
+    <title>Hotel Mng. Syst</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     
@@ -69,18 +69,34 @@
         text-decoration: none;
         cursor: pointer;
     }
+    .spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #8d703b;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    vertical-align: middle;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 
   <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
-	    <div class="container">
-	      <a class="navbar-brand" href="index.html">Deluxe</a>
-	      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-	        <span class="oi oi-menu"></span> Menu
-	      </button>
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+  <div class="container">
+      <a class="navbar-brand" href="index.html">Deluxe</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="oi oi-menu"></span> Menu
+      </button>
 
-        <div class="collapse navbar-collapse" id="ftco-nav">
+      <div class="collapse navbar-collapse" id="ftco-nav">
           <ul class="navbar-nav ml-auto">
               <li class="nav-item active"><a href="index.html" class="nav-link">Home</a></li>
               <li class="nav-item"><a href="rooms.html" class="nav-link">Rooms</a></li>
@@ -88,7 +104,8 @@
               <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
               <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
               <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-              <li class="nav-item"><a id="loginButton" href="admin.html" class="nav-link">Admin Portal</a></li>
+              <li class="nav-item"><a href="#"  id="loginButton" class="nav-link">Admin Portal</a></li>
+
               <!-- <li class="nav-item">
                   <a id="loginButton" style="background-color: #8d703b; padding-left: 2rem; padding-right: 2rem; border-radius: 0.5rem; padding-top: 0.5rem; padding-bottom: 0.5rem;" href="#" class="nav-link">Login</a>
               </li> -->
@@ -97,26 +114,28 @@
   </div>
 </nav>
 
-<!-- Login Modal
+<!-- Login Modal -->
 <div id="loginModal" class="modal" style="display:none;">
   <div class="modal-content" style="background-color: white; padding: 2rem; border-radius: 1rem; width: 40%; margin: 10% auto; box-shadow: 0 5px 15px rgba(0,0,0,.5);">
-      <span id="closeLoginModal" style="float: right; font-size: 2rem; cursor: pointer;">&times;</span>
-      <h2>Login</h2>
-      <form id="loginForm">
-          <div class="form-group">
-              <label for="email">Email:</label>
-              <input type="email" id="email" class="form-control" required>
-          </div>
-          <div class="form-group">
-              <label for="password">Password:</label>
-              <input type="password" id="password" class="form-control" required>
-          </div>
-          <button type="submit" style="background-color: #8d703b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.25rem;">Login</button>
-      </form>
-      <p style="margin-top: 1rem; text-align: center;">Don't have an account? <a id="showRegisterModal" href="#" style="color: #8d703b;">Register here</a>.</p>
+    <span id="closeLoginModal" style="float: right; font-size: 2rem; cursor: pointer;">&times;</span>
+    <h2>Login</h2>
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" class="form-control" required>
+      </div>
+      <button id="loginButton" type="submit" style="background-color: #8d703b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; position: relative;">
+        <span id="buttonText">Login</span>
+        <span id="loader" style="display: none; margin-left: 10px;" class="spinner"></span>
+      </button>
+    </form>
+    <p id="errorMessage" style="color: red; margin-top: 1rem; display:none; text-align: center;">User not found. Please check your email and password.</p>
   </div>
-</div> -->
-
+</div>
 
 <!-- Registration Modal
 <div id="registerModal" class="modal" style="display:none;">
@@ -145,6 +164,8 @@
       <p style="margin-top: 1rem; text-align: center;">Already have an account? <a id="showLoginModal" href="#" style="color: #8d703b;">Login here</a>.</p>
   </div>
 </div> -->
+
+
 
     <section class="home-slider owl-carousel">
       <div class="slider-item" style="background-image:url(images/bg_1.jpg);">
@@ -693,7 +714,7 @@
           <div class="col-md">
             <div class="ftco-footer-widget mb-4">
               <h2 class="ftco-heading-2">Deluxe Hotel</h2>
-              <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+              <p>Welcome to Delux Hotel, where luxury meets comfort and exceptional hospitality is our hallmark.</p>
               <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
                 <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
                 <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
@@ -705,10 +726,10 @@
             <div class="ftco-footer-widget mb-4 ml-md-5">
               <h2 class="ftco-heading-2">Useful Links</h2>
               <ul class="list-unstyled">
-                <li><a href="#" class="py-2 d-block">Blog</a></li>
-                <li><a href="#" class="py-2 d-block">Rooms</a></li>
-                <li><a href="#" class="py-2 d-block">Amenities</a></li>
-                <li><a href="#" class="py-2 d-block">Gift Card</a></li>
+                <li><a href="blog.html" class="py-2 d-block">Blog</a></li>
+                <li><a href="rooms.html" class="py-2 d-block">Rooms</a></li>
+                <li><a href="restaurant.html" class="py-2 d-block">Restaurant</a></li>
+                <!-- <li><a href="#" class="py-2 d-block">Gift Card</a></li> -->
               </ul>
             </div>
           </div>
@@ -717,9 +738,10 @@
               <h2 class="ftco-heading-2">Privacy</h2>
               <ul class="list-unstyled">
                 <li><a href="#" class="py-2 d-block">Career</a></li>
-                <li><a href="#" class="py-2 d-block">About Us</a></li>
-                <li><a href="#" class="py-2 d-block">Contact Us</a></li>
-                <li><a href="#" class="py-2 d-block">Services</a></li>
+                <li><a href="about.html" class="py-2 d-block">About Us</a></li>
+                <li><a href="contact.html" class="py-2 d-block">Contact Us</a></li>
+                <li><a href="admin.html" id="loginButton" class="py-2 d-block">Admin Portal</a></li>
+                
               </ul>
             </div>
           </div>
@@ -728,9 +750,10 @@
             	<h2 class="ftco-heading-2">Have a Questions?</h2>
             	<div class="block-23 mb-3">
 	              <ul>
-	                <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-	                <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-	                <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+	                <li><span class="icon icon-map-marker"></span><span class="text">Amasaman - Accra, Ghana</span></li>
+                  <li><a href="tel:+223592762255"><span class="icon icon-phone"></span><span class="text">+223 592 7622 55</span></a></li>
+                  <li><a href="mailto:simplymark443@gmail.com"><span class="icon icon-envelope"></span><span class="text">simplymark443@gmail.com</span></a></li>
+                  
 	              </ul>
 	            </div>
             </div>
@@ -739,9 +762,7 @@
         <div class="row">
           <div class="col-md-12 text-center">
 
-            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+          
           </div>
         </div>
       </div>
@@ -771,7 +792,6 @@
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
 <!-- 
-<!-- JavaScript -->
 <script>
     // Hover effect for the login button
     document.getElementById('loginButton').addEventListener('mouseover', function() {
@@ -822,7 +842,102 @@
     });
 </script> -->
 
+
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDLO6LxCZnYRY0ZZGwQZocEQPIr7GFiShs",
+    authDomain: "infotechnexus-47b53.firebaseapp.com",
+    projectId: "infotechnexus-47b53",
+    storageBucket: "infotechnexus-47b53.appspot.com",
+    messagingSenderId: "70691322233",
+    appId: "1:70691322233:web:61c491e839e3c94eb497a8",
+    measurementId: "G-KF3Z6X8VPF"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  window.addEventListener('DOMContentLoaded', (event) => {
+
+    // Get references to elements
+    const loginButton = document.getElementById("loginButton");
+    const loginModal = document.getElementById("loginModal");
+    const closeLoginModal = document.getElementById("closeLoginModal");
+    const loginForm = document.getElementById("loginForm");
+    const errorMessage = document.getElementById("errorMessage");
+    const loader = document.getElementById("loader"); // Loader inside the button
+    const buttonText = document.getElementById("buttonText");
+
+    if (loginButton && loginModal && closeLoginModal && loginForm && errorMessage && loader) {
+
+      // Show the login modal when the login button is clicked
+      loginButton.onclick = function() {
+        loginModal.style.display = "block";
+      };
+
+      // Close the login modal
+      closeLoginModal.onclick = function() {
+        loginModal.style.display = "none";
+      };
+
+      // Handle the login form submission
+      loginForm.addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent form from submitting normally
+
+        // Show the loader and hide any previous error messages
+        loader.style.display = "inline-block"; // Show loader in the button
+        buttonText.style.display = "none"; // Hide the button text
+        loginButton.disabled = true; // Disable the button to prevent multiple clicks
+        errorMessage.style.display = "none"; // Hide error message
+
+        // Get form values
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        try {
+          // Query Firestore to find a user with matching email and password
+          const usersRef = collection(db, "Users");
+          const q = query(usersRef, where("email", "==", email), where("password", "==", password));
+          const querySnapshot = await getDocs(q);
+
+          if (!querySnapshot.empty) {
+            // User found, redirect to admin.html
+            console.log("User found in Firestore");
+            window.location.href = "admin.html";
+          } else {
+            // User not found or incorrect password
+            console.log("User not found or incorrect password");
+            errorMessage.textContent = "Invalid email or password. Please try again.";
+            errorMessage.style.display = "block";
+          }
+        } catch (error) {
+          console.error("Error querying Firestore:", error);
+          errorMessage.textContent = "An error occurred. Please try again.";
+          errorMessage.style.display = "block";
+        } finally {
+          // Hide the loader and re-enable the button
+          loader.style.display = "none";
+          buttonText.style.display = "inline"; // Show button text again
+          loginButton.disabled = false;
+        }
+      });
+    } else {
+      console.error("One or more required elements are missing from the DOM");
+    }
+  });
+</script>
+
+
+
+
+<!-- <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
@@ -923,7 +1038,7 @@
     // For demonstration purposes, show the login modal when the page loads
     showLoginModal();
   });
-</script>
+</script> -->
 
 
   </body>
