@@ -207,6 +207,34 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
+
+
+  <script>
+    // Initialize and add the map
+    function initMap() {
+        // The location of Amasaman
+        var amasaman = { lat: 5.6955, lng: -0.2992 };
+        
+        // The map, centered at Amasaman
+        var map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 12,
+            center: amasaman, // Explicitly center the map at Amasaman
+        });
+        
+        // The marker, positioned at Amasaman
+        var marker = new google.maps.Marker({
+            position: amasaman,
+            map: map,
+            title: "Amasaman",
+        });
+    }
+</script>
+
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDkw3a_XLgmpbUFB1yuuNj3o5cFlhP7HCo&callback=initMap"></script>
     
   </body>
+ 
+
+
+ 
 </html>

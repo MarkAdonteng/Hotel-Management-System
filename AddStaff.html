@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+</head>
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=Poppins:wght@400;600&display=swap");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 60px; /* Initial width to show only icons */
+            height: 100vh;
+            background-color: #2c3e50;
+            position: fixed;
+            transition: width 0.3s; /* Smooth transition for hover effect */
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space between menu items and logout link */
+        }
+
+        .sidebar:hover {
+            width: 200px; /* Expand the sidebar width on hover */
+        }
+
+        .sidebar .logo {
+            height: 80px;
+            background-color: #34495e;
+        }
+
+        .sidebar ul.menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            flex-grow: 1; /* Make the menu take up remaining space */
+        }
+
+        .sidebar ul.menu li {
+            padding: 15px 10px;
+            text-align: left;
+        }
+
+        .sidebar ul.menu li a {
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .sidebar ul.menu li a i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .sidebar ul.menu li a span {
+            display: none; /* Hide the text initially */
+            opacity: 0; /* Invisible but still in the layout */
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar:hover ul.menu li a span {
+            display: inline-block; /* Show the text on hover */
+            opacity: 1; /* Fade in the text */
+        }
+
+        /* Add active/hover effects */
+        .sidebar ul.menu li a:hover {
+            color: #8d703b; 
+        }
+
+        /* .sidebar ul.menu li.active a {
+            background-color: #8d703b; 
+        } */
+
+        .logout {
+            padding: 15px 10px;
+        }
+
+        .logout a {
+            text-decoration: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+
+        .logout a i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .logout a span {
+            display: none; /* Hide the text initially */
+            opacity: 0; /* Invisible but still in the layout */
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar:hover .logout a span {
+            display: inline-block; /* Show the text on hover */
+            opacity: 1; /* Fade in the text */
+        }
+
+        .mainContent {
+            margin-left: 60px;
+            background-color: aliceblue;
+            width: 100%;
+            padding: 1rem;
+            transition: margin-left 0.5s ease-in-out;
+        }
+
+        .sidebar:hover ~ .mainContent {
+            margin-left: 200px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: azure;
+            border-radius: 10px;
+            padding: 10px 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .headerTitle h2 {
+            color: rgb(13, 70, 145);
+        }
+
+        .userInfo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .searchbox {
+            background-color: rgb(230, 236, 236);
+            border-radius: 45px;
+            display: flex;
+            align-items: center;
+            padding: 4px 12px;
+        }
+
+        .searchbox input {
+            background: transparent;
+            padding: 10px;
+            border: none;
+            width: 200px;
+        }
+
+        .searchbox i {
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Styles for the logout modal */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 400px; /* Ensure max width */
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .modal-buttons button:hover {
+            background-color: #8d703b;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar fixed left-0 top-0">
+        <div class="logo"></div>
+        <ul class="menu">
+          <li class="active">
+            <a href="admin.html"><i class="fa-solid fa-gauge "></i><span>Dashboard</span></a>
+          </li>
+          <li class="displayButton">
+            <a href="#"><i class="fa-solid fa-user"></i><span>Staffs</span></a>
+          </li>
+          <li>
+            <a href="FAQ.html"><i class="fa-solid fa-question-circle"></i><span>FAQs</span></a>
+          </li>
+          <li>
+            <a href="#"><i class="fa-solid fa-star"></i><span>Testimonials</span></a>
+          </li>
+          <li>
+            <a href="#"><i class="fa-solid fa-cog"></i><span>Settings</span></a>
+          </li>
+        </ul>
+        <div class="logout">
+            <a href="#" id="logoutLink"><i class="fa-solid fa-sign-out-alt"></i><span>Log Out</span></a>
+        </div>
+      </div>
+
+    <div class="mainContent">
+        <div class="header">
+            <div class="headerTitle">
+                <span>Admin</span>
+                <h2>Staffs</h2>
+            </div>
+            <div class="userInfo">
+                <div class="searchbox">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search">
+                </div>
+            </div>
+        </div>
+
+
+        <body class="bg-gray-100 p-8">
+            <div class="flex flex-col lg:flex-row gap-8">
+                <div class="w-full lg:w-1/3 bg-white p-8 rounded-lg shadow-md">
+                    <h1 class="text-2xl font-semibold mb-6 text-gray-700">Add Staff Member</h1>
+                    <form id="staff-form" class="space-y-4">
+                        <div class="flex flex-col">
+                            <label for="full-name" class="text-gray-600 mb-1">Full Name</label>
+                            <input id="full-name" type="text" placeholder="Enter full name" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" required>
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="email" class="text-gray-600 mb-1">Email</label>
+                            <input id="email" type="email" placeholder="Enter email" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" required>
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="phone" class="text-gray-600 mb-1">Phone</label>
+                            <input id="phone" type="tel" placeholder="Enter phone number" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" required>
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="role" class="text-gray-600 mb-1">Role</label>
+                            <select id="role" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" required>
+                                <option value="#">Select Role</option>
+                                <option value="regular">Regular Staff</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="address" class="text-gray-600 mb-1">Address</label>
+                            <input id="address" type="text" placeholder="Enter address" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" required>
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="what-you-do" class="text-gray-600 mb-1">What You Do</label>
+                            <input id="what-you-do" type="text" placeholder="Describe what you do" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" required>
+                        </div>
+                        
+                        <div class="flex flex-col">
+                            <label for="status" class="text-gray-600 mb-1">Status</label>
+                            <select id="status" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black" required>
+                                <option value="#">Select Status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                                <option value="sacked">Sacked</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-black focus:outline-none focus:ring-2 focus:ring-black" style="background-color: #8d703b;">
+                            Submit
+                        </button>
+                    </form>
+                </div>
+        
+                <div class="w-full lg:w-2/3 bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-semibold mb-6 text-gray-700">Staff List</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">What You Do</th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="py-2 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staff-list">
+                                <!-- Staff list will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </body>        
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to log out?</p>
+            <div class="modal-buttons">
+                <button id="confirmLogout">Yes, Log Out</button>
+                <button id="cancelLogout">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get modal and buttons
+        var logoutModal = document.getElementById("logoutModal");
+        var logoutLink = document.getElementById("logoutLink");
+        var confirmLogout = document.getElementById("confirmLogout");
+        var cancelLogout = document.getElementById("cancelLogout");
+
+        // When the logout link is clicked, display the modal
+        logoutLink.onclick = function(event) {
+            event.preventDefault();
+            logoutModal.style.display = "flex"; // Display the modal as a flexbox
+        }
+
+        // When the 'Yes, Log Out' button is clicked, navigate to index.html
+        confirmLogout.onclick = function() {
+            window.location.href = "index.html";
+        }
+
+        // When the 'Cancel' button is clicked, close the modal
+        cancelLogout.onclick = function() {
+            logoutModal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == logoutModal) {
+                logoutModal.style.display = "none";
+            }
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+// Initialize Firebase (replace with your own config)
+const firebaseConfig = {
+    apiKey: "AIzaSyDLO6LxCZnYRY0ZZGwQZocEQPIr7GFiShs",
+    authDomain: "infotechnexus-47b53.firebaseapp.com",
+    projectId: "infotechnexus-47b53",
+    storageBucket: "infotechnexus-47b53.appspot.com",
+    messagingSenderId: "70691322233",
+    appId: "1:70691322233:web:61c491e839e3c94eb497a8",
+    measurementId: "G-KF3Z6X8VPF"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// Function to generate a random password
+function generatePassword(length = 12) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+}
+
+// Function to send SMS
+async function sendSMS(recipient, message) {
+    const endPoint = 'https://apps.mnotify.net/smsapi';
+    const apiKey = 'TUX6IqmI8FGQEjY2isJROxxCP';
+    const senderId = 'TTC24';
+
+    const url = `${endPoint}?key=${apiKey}&to=${recipient}&msg=${encodeURIComponent(message)}&sender_id=${senderId}`;
+
+    try {
+        const response = await axios.post(url);
+        console.log('SMS sent successfully:', response.data);
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            console.error('Error sending SMS:', error.response ? error.response.data : error.message);
+        } else if (error instanceof Error) {
+            console.error('Error sending SMS:', error.message);
+        } else {
+            console.error('Unexpected error sending SMS:', error);
+        }
+    }
+}
+
+// Handle staff form submission
+document.getElementById('staff-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const staffData = {
+        fullName: document.getElementById('full-name').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        role: document.getElementById('role').value,
+        address: document.getElementById('address').value,
+        whatYouDo: document.getElementById('what-you-do').value,
+        status: document.getElementById('status').value,
+    };
+
+    // If role is admin, generate a passkey
+    if (staffData.role === 'admin') {
+        staffData.passkey = generatePassword();
+
+        // Prepare the SMS message with the passkey
+        const smsMessage = `Hello ${staffData.fullName},\n\nYour passkey for admin access is: ${staffData.passkey}\n\nPlease keep this passkey secure.\n\nBest regards,\nDelux Hotel`;
+
+        // Send SMS with the passkey
+        try {
+            await sendSMS(staffData.phone, smsMessage);
+            console.log('Passkey sent via SMS');
+        } catch (error) {
+            console.error('Error sending passkey via SMS:', error);
+            alert('An error occurred while sending the passkey. Please try again.');
+            return;
+        }
+    }
+
+    try {
+        // Add the staff data to Firestore
+        await db.collection('Staff').add(staffData);
+        alert('Staff member added successfully!');
+        document.getElementById('staff-form').reset();
+        fetchStaffList(); // Refresh the staff list
+    } catch (error) {
+        console.error('Error adding staff member: ', error);
+        alert('An error occurred while adding the staff member.');
+    }
+});
+    // Function to fetch and display staff list
+    async function fetchStaffList() {
+        const staffList = document.getElementById('staff-list');
+        staffList.innerHTML = ''; // Clear existing list
+
+        try {
+            const snapshot = await db.collection('Staff').get();
+            snapshot.forEach((doc) => {
+                const staff = doc.data();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-2 px-4 border-b border-gray-200">${staff.fullName}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">${staff.email}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">${staff.phone}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">${staff.role}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">${staff.whatYouDo}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">${staff.status}</td>
+                    <td class="py-2 px-4 border-b border-gray-200">
+                        <button onclick="editStaff('${doc.id}')" class="text-blue-600 hover:text-blue-800 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteStaff('${doc.id}')" class="text-red-600 hover:text-red-800">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                staffList.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching staff list: ', error);
+            staffList.innerHTML = '<tr><td colspan="7" class="py-2 px-4 border-b border-gray-200 text-red-500">Error fetching staff list</td></tr>';
+        }
+    }
+
+    // Function to edit staff
+    async function editStaff(id) {
+        try {
+            const doc = await db.collection('Staff').doc(id).get();
+            const staff = doc.data();
+            
+            // Populate form with staff data
+            document.getElementById('full-name').value = staff.fullName;
+            document.getElementById('email').value = staff.email;
+            document.getElementById('phone').value = staff.phone;
+            document.getElementById('role').value = staff.role;
+            document.getElementById('address').value = staff.address;
+            document.getElementById('what-you-do').value = staff.whatYouDo;
+            document.getElementById('status').value = staff.status;
+
+            // Change form submit behavior to update instead of add
+            const form = document.getElementById('staff-form');
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                await updateStaff(id);
+            };
+
+            // Change submit button text
+            form.querySelector('button[type="submit"]').textContent = 'Update Staff';
+        } catch (error) {
+            console.error('Error editing staff: ', error);
+            alert('An error occurred while editing the staff member.');
+        }
+    }
+
+    // Function to update staff
+    async function updateStaff(id) {
+        const staffData = {
+            fullName: document.getElementById('full-name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            role: document.getElementById('role').value,
+            address: document.getElementById('address').value,
+            whatYouDo: document.getElementById('what-you-do').value,
+            status: document.getElementById('status').value,
+        };
+
+        try {
+            await db.collection('Staff').doc(id).update(staffData);
+            alert('Staff member updated successfully!');
+            document.getElementById('staff-form').reset();
+            fetchStaffList(); // Refresh the staff list
+
+            // Reset form submit behavior
+            const form = document.getElementById('staff-form');
+            form.onsubmit = null;
+            form.querySelector('button[type="submit"]').textContent = 'Submit';
+        } catch (error) {
+            console.error('Error updating staff: ', error);
+            alert('An error occurred while updating the staff member.');
+        }
+    }
+
+    // Function to delete staff
+    async function deleteStaff(id) {
+        if (confirm('Are you sure you want to delete this staff member?')) {
+            try {
+                await db.collection('Staff').doc(id).delete();
+                alert('Staff member deleted successfully!');
+                fetchStaffList(); // Refresh the staff list
+            } catch (error) {
+                console.error('Error deleting staff: ', error);
+                alert('An error occurred while deleting the staff member.');
+            }
+        }
+    }
+
+    // Fetch staff list on page load
+    fetchStaffList();
+</script>
+</body>
+</html>

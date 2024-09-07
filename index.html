@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,400i,700,700i" rel="stylesheet">
 
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
+
     <link rel="stylesheet" href="css/open-iconic-bootstrap.min.css">
     <link rel="stylesheet" href="css/animate.css">
     
@@ -124,9 +126,13 @@
         <label for="email">Email:</label>
         <input type="email" id="email" class="form-control" required>
       </div>
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="password">Password:</label>
         <input type="password" id="password" class="form-control" required>
+      </div> -->
+      <div class="form-group">
+        <label for="passkey">Passkey:</label>
+        <input type="passkey" id="passkey" class="form-control" required>
       </div>
       <button id="loginButton" type="submit" style="background-color: #8d703b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 0.25rem; position: relative;">
         <span id="buttonText">Login</span>
@@ -134,6 +140,7 @@
       </button>
     </form>
     <p id="errorMessage" style="color: red; margin-top: 1rem; display:none; text-align: center;">User not found. Please check your email and password.</p>
+    <!-- <p style="margin-top: 1rem; text-align: center;">Don't have an account? <a id="showRegisterModal" href="#" style="color: #8d703b;">Register here</a>.</p> -->
   </div>
 </div>
 
@@ -164,7 +171,6 @@
       <p style="margin-top: 1rem; text-align: center;">Already have an account? <a id="showLoginModal" href="#" style="color: #8d703b;">Login here</a>.</p>
   </div>
 </div> -->
-
 
 
     <section class="home-slider owl-carousel">
@@ -791,56 +797,64 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
-<!-- 
-<script>
-    // Hover effect for the login button
-    document.getElementById('loginButton').addEventListener('mouseover', function() {
-        this.style.backgroundColor = 'black';
-    });
-    document.getElementById('loginButton').addEventListener('mouseout', function() {
-        this.style.backgroundColor = '#8d703b';
-    });
 
-    // Display the login modal when the login button is clicked
-    document.getElementById('loginButton').addEventListener('click', function(event) {
-        event.preventDefault();
-        document.getElementById('loginModal').style.display = 'block';
-    });
 
-    // Display the registration modal when the registration link is clicked
-    document.getElementById('showRegisterModal').addEventListener('click', function(event) {
-        event.preventDefault();
-        document.getElementById('loginModal').style.display = 'none';
-        document.getElementById('registerModal').style.display = 'block';
-    });
-
-    // Display the login modal when the login link is clicked in the registration modal
-    document.getElementById('showLoginModal').addEventListener('click', function(event) {
-        event.preventDefault();
-        document.getElementById('registerModal').style.display = 'none';
-        document.getElementById('loginModal').style.display = 'block';
-    });
-
-    // Close the login modal when the close button is clicked
-    document.getElementById('closeLoginModal').addEventListener('click', function() {
-        document.getElementById('loginModal').style.display = 'none';
-    });
-
-    // Close the registration modal when the close button is clicked
-    document.getElementById('closeRegisterModal').addEventListener('click', function() {
-        document.getElementById('registerModal').style.display = 'none';
-    });
-
-    // Close the modal when clicking outside of the modal content
-    window.addEventListener('click', function(event) {
-        if (event.target == document.getElementById('loginModal')) {
-            document.getElementById('loginModal').style.display = 'none';
-        }
-        if (event.target == document.getElementById('registerModal')) {
-            document.getElementById('registerModal').style.display = 'none';
-        }
-    });
-</script> -->
+  <!-- <script>
+  // Get modal elements
+  const loginModal = document.getElementById('loginModal');
+  const registerModal = document.getElementById('registerModal');
+  
+  // Get link elements
+  const showRegisterModal = document.getElementById('showRegisterModal');
+  const showLoginModal = document.getElementById('showLoginModal');
+  
+  // Get close buttons
+  const closeLoginModal = document.getElementById('closeLoginModal');
+  const closeRegisterModal = document.getElementById('closeRegisterModal');
+  
+  // Function to show the login modal
+  function showLogin() {
+    loginModal.style.display = 'block';
+    registerModal.style.display = 'none';
+  }
+  
+  // Function to show the registration modal
+  function showRegister() {
+    registerModal.style.display = 'block';
+    loginModal.style.display = 'none';
+  }
+  
+  // Show registration modal when "Register here" is clicked
+  showRegisterModal.addEventListener('click', function(e) {
+    e.preventDefault();
+    showRegister();
+  });
+  
+  // Show login modal when "Login here" is clicked
+  showLoginModal.addEventListener('click', function(e) {
+    e.preventDefault();
+    showLogin();
+  });
+  
+  // Close modals
+  closeLoginModal.addEventListener('click', function() {
+    loginModal.style.display = 'none';
+  });
+  
+  closeRegisterModal.addEventListener('click', function() {
+    registerModal.style.display = 'none';
+  });
+  
+  // Optionally, you might want to close the modals when clicking outside of them
+  window.addEventListener('click', function(event) {
+    if (event.target === loginModal) {
+      loginModal.style.display = 'none';
+    }
+    if (event.target === registerModal) {
+      registerModal.style.display = 'none';
+    }
+  });
+</script>   -->
 
 
 <script type="module">
@@ -899,12 +913,12 @@
 
         // Get form values
         const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+        const passkey = document.getElementById("passkey").value;
 
         try {
           // Query Firestore to find a user with matching email and password
-          const usersRef = collection(db, "Users");
-          const q = query(usersRef, where("email", "==", email), where("password", "==", password));
+          const usersRef = collection(db, "Staff");
+          const q = query(usersRef, where("email", "==", email), where("passkey", "==", passkey));
           const querySnapshot = await getDocs(q);
 
           if (!querySnapshot.empty) {
@@ -933,6 +947,7 @@
     }
   });
 </script>
+
 
 
 
