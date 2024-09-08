@@ -305,12 +305,18 @@
                                 <option value="#">Select Status</option>
                                 <option value="active">Active</option>
                                 <option value="suspended">Suspended</option>
-                                <option value="sacked">Sacked</option>
+                                <option value="laid off">laid off</option>
                             </select>
                         </div>
                         
-                        <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-black focus:outline-none focus:ring-2 focus:ring-black" style="background-color: #8d703b;">
-                            Submit
+                        <button type="submit" id="submit-btn" class="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-black focus:outline-none focus:ring-2 focus:ring-black" style="background-color: #8d703b;">
+                            <span id="button-text">Submit</span>
+                            <span id="loader" class="hidden">
+                                <svg class="animate-spin h-5 w-5 text-white inline-block ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"></path>
+                                </svg>
+                            </span>
                         </button>
                     </form>
                 </div>
@@ -349,6 +355,25 @@
             </div>
         </div>
     </div>
+
+    <!-- Success Modal -->
+<div id="success-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+        <h2 class="text-2xl font-semibold mb-4 text-green-600">Success!</h2>
+        <p id="success-message" class="mb-4 text-gray-700">Staff member added successfully!</p>
+        <button onclick="closeModal('success-modal')" class="py-2 px-4 text-white rounded-lg hover:bg-black" style="background-color: #8d703b;">Close</button>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="error-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-8 rounded-lg shadow-lg text-center">
+        <h2 class="text-2xl font-semibold mb-4 text-red-600">Error!</h2>
+        <p id="error-message" class="mb-4 text-gray-700">An error occurred. Please try again.</p>
+        <button onclick="closeModal('error-modal')" class="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-black">Close</button>
+    </div>
+</div>
+
 
     <script>
         // Get modal and buttons
@@ -427,9 +452,32 @@ async function sendSMS(recipient, message) {
     }
 }
 
+// Function to open a modal
+function openModal(modalId, message = '') {
+    const modal = document.getElementById(modalId);
+    if (message) {
+        modal.querySelector('p').textContent = message;
+    }
+    modal.classList.remove('hidden');
+}
+
+// Function to close a modal
+function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+}
+
 // Handle staff form submission
 document.getElementById('staff-form').addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const submitBtn = document.getElementById('submit-btn');
+    const buttonText = document.getElementById('button-text');
+    const loader = document.getElementById('loader');
+
+    // Disable the submit button and show the loader
+    submitBtn.disabled = true;
+    buttonText.classList.add('hidden');
+    loader.classList.remove('hidden');
 
     const staffData = {
         fullName: document.getElementById('full-name').value,
@@ -454,7 +502,10 @@ document.getElementById('staff-form').addEventListener('submit', async (e) => {
             console.log('Passkey sent via SMS');
         } catch (error) {
             console.error('Error sending passkey via SMS:', error);
-            alert('An error occurred while sending the passkey. Please try again.');
+            openModal('error-modal', 'An error occurred while sending the passkey. Please try again.');
+            submitBtn.disabled = false;
+            buttonText.classList.remove('hidden');
+            loader.classList.add('hidden');
             return;
         }
     }
@@ -462,15 +513,21 @@ document.getElementById('staff-form').addEventListener('submit', async (e) => {
     try {
         // Add the staff data to Firestore
         await db.collection('Staff').add(staffData);
-        alert('Staff member added successfully!');
+        openModal('success-modal');
         document.getElementById('staff-form').reset();
         fetchStaffList(); // Refresh the staff list
     } catch (error) {
         console.error('Error adding staff member: ', error);
-        alert('An error occurred while adding the staff member.');
+        openModal('error-modal', 'An error occurred while adding the staff member.');
+    } finally {
+        // Re-enable the submit button and hide the loader
+        submitBtn.disabled = false;
+        buttonText.classList.remove('hidden');
+        loader.classList.add('hidden');
     }
 });
-    // Function to fetch and display staff list
+
+// Function to fetch and display staff list
     async function fetchStaffList() {
         const staffList = document.getElementById('staff-list');
         staffList.innerHTML = ''; // Clear existing list
