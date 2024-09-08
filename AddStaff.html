@@ -434,7 +434,7 @@ function generatePassword(length = 12) {
 async function sendSMS(recipient, message) {
     const endPoint = 'https://apps.mnotify.net/smsapi';
     const apiKey = 'TUX6IqmI8FGQEjY2isJROxxCP';
-    const senderId = 'Deluxe';
+    const senderId = 'JCL Lodge';
 
     const url = `${endPoint}?key=${apiKey}&to=${recipient}&msg=${encodeURIComponent(message)}&sender_id=${senderId}`;
 
@@ -494,7 +494,7 @@ document.getElementById('staff-form').addEventListener('submit', async (e) => {
         staffData.passkey = generatePassword();
 
         // Prepare the SMS message with the passkey
-        const smsMessage = `Hello ${staffData.fullName},\n\nYour passkey for admin access is: ${staffData.passkey}\n\nPlease keep this passkey secure.\n\nBest regards,\nDelux Hotel`;
+        const smsMessage = `Hello ${staffData.fullName},\n\nYour passkey for admin access is: ${staffData.passkey}\n\nPlease keep this passkey secure.\n\nBest regards,\nJCL Guest House & Lodge`;
 
         // Send SMS with the passkey
         try {
