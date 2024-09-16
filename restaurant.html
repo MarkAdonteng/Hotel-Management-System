@@ -92,8 +92,11 @@
           <div class="col-md-7 heading-section text-center ftco-animate">
             <h2>Our Menu</h2>
           </div>
+		 
+
         </div>
-				<div class="row">
+		
+				<div class="row overflow-y-hidden">
         	<div class="col-md-6">
         		<div class="pricing-entry d-flex ftco-animate">
         			<div class="img" style="background-image: url(images/chicken-dish-with-chicken-pieces-tomato-sauce-served-with-rice-tomatoes.jpg);"></div>
@@ -196,8 +199,85 @@
         		</div>
         	</div>
         </div>
+	
 			</div>
+			<div class="row justify-content-center">
+					  <button class="btn btn-primary py-3 px-6  right-64 text-white font-semibold  hover:bg-black rounded-lg shadow-lg transform transition duration-300 ease-in-out " data-toggle="modal" data-target="#orderModal">
+						Place Your Order Now &raquo;
+					  </button>
+				</div>
+				<div class="row justify-content-center">
+					<p style="font-style: italic; text-align: center; margin-top: 10px;">
+						<span style="color: red;">NOTE:</span> You will be contacted to inquire about your room or location to deliver the food after making payment.
+					  </p>
+			  </div>
+			  
+		  
+
+			
 		</section>
+		
+
+
+	<!-- Modal Structure -->
+<div id="orderModal" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title">Order Food</h5>
+		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="modal-body">
+		  <form id="orderForm">
+			<!-- Dropdown for Food Selection -->
+			<div class="form-group">
+			  <label for="foodSelect">Select Food</label>
+			  <select class="form-control" id="foodSelect" required>
+				<option value="" disabled selected>Select your food</option>
+				<option value="Chicken Dish" data-price="120">Chicken Dish</option>
+				<option value="Dessert with Bananas" data-price="209">Dessert with Bananas</option>
+				<option value="Pancakes with Berries" data-price="210">Pancakes with Berries</option>
+				<option value="Grilled Steak with Vegetables" data-price="220">Grilled Steak with Vegetables</option>
+				<option value="Grilled Chicken with Vegetables" data-price="149.91">Grilled Chicken with Vegetables</option>
+				<option value="Vegetable and Grain Bowl" data-price="102">Vegetable and Grain Bowl</option>
+				<option value="Cocktail or Drink" data-price="99.99">Cocktail or Drink</option>
+				<option value="Ham & Pineapple" data-price="178">Ham & Pineapple</option>
+			  </select>
+			</div>
+  
+			<!-- Price Field (Read-only) -->
+			<div class="form-group">
+			  <label for="foodPrice">Price (₵)</label>
+			  <input type="text" class="form-control" id="foodPrice" placeholder="Price" readonly>
+			</div>
+  
+			<!-- User Information -->
+			<div class="form-group">
+			  <label for="userName">Full Name</label>
+			  <input type="text" class="form-control" id="userName" placeholder="Enter your full name" required>
+			</div>
+			<div class="form-group">
+			  <label for="userPhone">Phone Number</label>
+			  <input type="text" class="form-control" id="userPhone" placeholder="Enter your phone number" required>
+			</div>
+			<div class="form-group">
+			  <label for="userEmail">Email Address</label>
+			  <input type="email" class="form-control" id="userEmail" placeholder="Enter your email" required>
+			</div>
+			<div class="form-group">
+			  <label for="orderDetails">Special Requests</label>
+			  <textarea class="form-control" id="orderDetails" rows="3" placeholder="Any special requests?"></textarea>
+			</div>
+			<button type="submit" class="btn btn-primary">Submit Order</button>
+		  </form>
+		</div>
+	  </div>
+	</div>
+  </div>
+  
+		
 
     <section class="instagram pt-5">
       <div class="container-fluid">
@@ -330,6 +410,141 @@
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
   <script src="js/google-map.js"></script>
   <script src="js/main.js"></script>
+
+
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+  <script>
+	// JavaScript for handling food selection, form submission, and Paystack integration
+	document.addEventListener('DOMContentLoaded', function() {
+	  const foodSelect = document.getElementById('foodSelect');
+	  const foodPrice = document.getElementById('foodPrice');
+  
+	  // Update price field when a food item is selected
+	  foodSelect.addEventListener('change', function() {
+		const selectedOption = foodSelect.options[foodSelect.selectedIndex];
+		const price = selectedOption.getAttribute('data-price');
+		foodPrice.value = price ? price : ''; // Set price or reset if no selection
+	  });
+  
+	  // Handle form submission and trigger Paystack payment
+	  document.getElementById('orderForm').addEventListener('submit', function(event) {
+		event.preventDefault();
+		
+		// Get user input
+		const userName = document.getElementById('userName').value;
+		const userPhone = document.getElementById('userPhone').value;
+		const userEmail = document.getElementById('userEmail').value;
+		const selectedFood = foodSelect.value;
+		const price = document.getElementById('foodPrice').value * 100; // Paystack expects amount in kobo
+		const orderDetails = document.getElementById('orderDetails').value;
+  
+		// Trigger Paystack payment
+		payWithPaystack(userName, userPhone, userEmail, price, selectedFood, orderDetails);
+	  });
+  
+	  // Function to send SMS
+	  async function sendSMS(recipient, message) {
+		const endPoint = 'https://apps.mnotify.net/smsapi';
+		const apiKey = 'TUX6IqmI8FGQEjY2isJROxxCP';
+		const senderId = 'JCL Lodge';
+  
+		const url = `${endPoint}?key=${apiKey}&to=${recipient}&msg=${encodeURIComponent(message)}&sender_id=${senderId}`;
+  
+		try {
+		  const response = await axios.post(url);
+		  console.log('SMS sent successfully:', response.data);
+		} catch (error) {
+		  if (axios.isAxiosError(error)) {
+			console.error('Error sending SMS:', error.response ? error.response.data : error.message);
+		  } else if (error instanceof Error) {
+			console.error('Error sending SMS:', error.message);
+		  } else {
+			console.error('Unexpected error sending SMS:', error);
+		  }
+		}
+	  }
+  
+	  function payWithPaystack(userName, userPhone, userEmail, price, selectedFood, orderDetails) {
+		let handler = PaystackPop.setup({
+		  key: 'pk_test_2102dadd0a64ea9007738c49b2559d1b4a80d96f', // Replace with your Paystack public key
+		  email: userEmail,
+		  amount: price, // Paystack amount is in kobo, so multiply by 100
+		  currency: "GHS", // Specify your currency here (₵ for Ghana)
+		  ref: 'PS_' + Math.floor((Math.random() * 1000000000) + 1), // Unique transaction reference
+		  metadata: {
+			custom_fields: [
+			  {
+				display_name: "Full Name",
+				variable_name: "full_name",
+				value: userName
+			  },
+			  {
+				display_name: "Phone Number",
+				variable_name: "phone_number",
+				value: userPhone
+			  },
+			  {
+				display_name: "Food Ordered",
+				variable_name: "food_ordered",
+				value: selectedFood
+			  },
+			  {
+				display_name: "Order Details",
+				variable_name: "order_details",
+				value: orderDetails
+			  }
+			]
+		  },
+		  callback: function(response) {
+			// Payment successful, handle the success here
+			console.log('Payment successful! Transaction ref:', response.reference);
+  
+			// Prepare the SMS message for the user
+			const paymentConfirmationMessage = `
+Hello ${userName}!
+
+Thank you for your food order at JCL GUEST HOUSE & LODGE restaurant.
+
+Order Details:
+- Food Ordered: ${selectedFood}
+- Special request: ${orderDetails}
+- Amount Paid: GHC${price / 100}
+
+Your transaction reference is: ${response.reference}.
+
+We will contact you shortly to confirm the delivery location and ensure your meal is delivered to you promptly.
+
+We hope you enjoy your meal! For any inquiries, feel free to contact us.
+
+Best regards,
+JCL GUEST HOUSE & LODGE
+jcllodge@info.com
+0543737196
+`;
+
+			// Send SMS to user after successful payment
+			sendSMS(userPhone, paymentConfirmationMessage);
+  
+			// Close the modal after payment success
+			$('#orderModal').modal('hide');
+  
+			// Reset the form
+			document.getElementById('orderForm').reset();
+			document.getElementById('foodPrice').value = ''; // Reset price field
+		  },
+		  onClose: function() {
+			alert('Payment process was not completed.');
+		  }
+		});
+  
+		handler.openIframe();
+	  }
+	});
+  </script>
+  
     
   </body>
 </html>
